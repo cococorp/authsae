@@ -286,3 +286,22 @@ err2:
 err1:
 	return -1;
 }
+
+int get_cf1_vht80(int freq)
+{
+	int cf1 = freq, j;
+	int vht80[] = { 5180, 5260, 5500, 5580, 5660, 5745 };
+
+        /* setup center_freq1 */
+	for (j = 0; j < ARRAY_SIZE(vht80); j++) {
+		if (freq >= vht80[j] && freq < vht80[j] + 80)
+			break;
+	}
+
+	if (j == ARRAY_SIZE(vht80))
+		goto out;
+
+	cf1 = vht80[j] + 30;
+out:
+	return cf1;
+}

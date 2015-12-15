@@ -1101,6 +1101,11 @@ static int join_mesh_rsn(struct netlink_config_s *nlcfg,
     if (mesh->channel_type != NL80211_CHAN_NO_HT)
         NLA_PUT_U32(msg, NL80211_ATTR_WIPHY_CHANNEL_TYPE, mesh->channel_type);
 
+    if (mesh->channel_width == NL80211_CHAN_WIDTH_80) {
+        NLA_PUT_U32(msg, NL80211_ATTR_CHANNEL_WIDTH, NL80211_CHAN_WIDTH_80);
+        NLA_PUT_U32(msg, NL80211_ATTR_CENTER_FREQ1, get_cf1_vht80(mesh->freq));
+    }
+
     NLA_PUT_U32(msg, NL80211_ATTR_IFINDEX, nlcfg->ifindex);
     NLA_PUT(msg, NL80211_ATTR_MESH_ID, mconf->meshid_len, mconf->meshid);
 
@@ -1332,8 +1337,10 @@ meshd_parse_libconfig (struct config_setting_t *meshd_section,
             config->channel_type = NL80211_CHAN_HT40PLUS;
         } else if (strncmp(str, "HT40-", 5) == 0) {
             config->channel_type = NL80211_CHAN_HT40MINUS;
+	} else if (strncmp(str, "VHT80", 5) == 0) {
+            config->channel_width = NL80211_CHAN_WIDTH_80;
         } else {
-            sae_debug(MESHD_DEBUG, "unknown HT mode \"%s\", disabling\n", str);
+            sae_debug(MESHD_DEBUG, "unknown (V)HT mode \"%s\", disabling\n", str);
         }
     }
 
@@ -1519,6 +1526,7 @@ int main(int argc, char *argv[])
     if (mesh.freq == -1)
         return -1;
     mesh.channel_type = meshd_conf.channel_type;
+    mesh.channel_width = meshd_conf.channel_width;
     mesh.band = meshd_conf.band == MESHD_11a ? IEEE80211_BAND_5GHZ
                                               : IEEE80211_BAND_2GHZ;
 

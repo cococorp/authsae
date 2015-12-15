@@ -54,6 +54,7 @@ struct meshd_config {
     int band;
     int debug;
     enum nl80211_channel_type channel_type;     /* HT mode */
+    enum nl80211_chan_width channel_width;	/* HT/VHT mode */
     /* ready to be copied into rate IEs. Includes BSSBasicRateSet */
 #define MAX_SUPP_RATES 32
     unsigned char rates[MAX_SUPP_RATES];
@@ -76,6 +77,7 @@ struct meshd_config {
 struct mesh_node {
     int freq;
     enum nl80211_channel_type channel_type;     /* HT mode */
+    enum nl80211_chan_width channel_width;	/* HT/VHT mode */
     uint8_t mymacaddr[ETH_ALEN];
     struct ieee80211_supported_band bands[IEEE80211_NUM_BANDS];
     /* current band */
