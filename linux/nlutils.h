@@ -31,6 +31,8 @@
 #include "nl80211-copy.h"
 #include "ieee802_11.h"
 
+#define ARRAY_SIZE(ar) (sizeof(ar)/sizeof(ar[0]))
+
 /* leave hw/kernel info here for now, maybe move to common.h? */
 #include "stdbool.h"
 
@@ -49,3 +51,4 @@ int netlink_init(struct netlink_config_s *nlcfg, void *event_handler);
 int send_nlmsg(struct nl_sock *nl_sock, struct nl_msg *msg);
 int send_nlmsg_suppress_error(struct nl_sock *nl_sock,
         struct nl_msg *msg, int expect_err);
+int get_cf1_vht80(int freq);

@@ -27,6 +27,17 @@ enum ht_channel_type {
 	CHAN_HT40PLUS
 };
 
+enum vht_channel_width {
+	CHAN_WIDTH_20_NOHT,
+	CHAN_WIDTH_20,
+	CHAN_WIDTH_40,
+	CHAN_WIDTH_80,
+	CHAN_WIDTH_80P80,
+	CHAN_WIDTH_160,
+	CHAN_WIDTH_5,
+	CHAN_WIDTH_10
+};
+
 enum ieee80211_band {
 	IEEE80211_BAND_2GHZ,
 	IEEE80211_BAND_5GHZ,
@@ -60,6 +71,7 @@ struct meshd_config {
     int band;
     int debug;
     enum ht_channel_type channel_type;     /* HT mode */
+    enum vht_channel_width channel_width;	/* HT/VHT mode */
     /* ready to be copied into rate IEs. Includes BSSBasicRateSet */
 #define MAX_SUPP_RATES 32
     unsigned char rates[MAX_SUPP_RATES];
@@ -83,6 +95,7 @@ struct meshd_config {
 struct mesh_node {
     int freq;
     enum ht_channel_type channel_type;     /* HT mode */
+    enum vht_channel_width channel_width;	/* HT/VHT mode */
     uint8_t mymacaddr[ETH_ALEN];
     struct ieee80211_supported_band bands[IEEE80211_NUM_BANDS];
     /* current band */
