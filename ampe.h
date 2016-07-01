@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "common.h"
+#include <net/if.h>
 #include "ieee802_11.h"
 
 unsigned char mgtk_tx[16];
@@ -52,6 +53,7 @@ struct ieee80211_supported_band {
 /* mesh configuration parameters. Our bss_conf */
 struct meshd_config {
     char interface[IFNAMSIZ + 1];
+    char bridge[IFNAMSIZ + 1];
     char meshid[MESHD_MAX_SSID_LEN + 1];
     int meshid_len;
     int passive;

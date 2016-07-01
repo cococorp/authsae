@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Dan Harkins, 2008, 2009, 2010
+ * Copyright (c) CoCo Communications, 2015
  *
  *  Copyright holder grants permission for redistribution and use in source
  *  and binary forms, with or without modification, provided that the
@@ -15,7 +15,7 @@
  *	  or use of this software must display the following acknowledgement:
  *
  *        "This product includes software written by
- *         Dan Harkins (dharkins at lounge dot org)"
+ *         Jesse Jones (jjones at cococorp dot com)"
  *
  *  "DISCLAIMER OF LIABILITY
  *
@@ -36,42 +36,24 @@
  * license (including the GNU public license).
  */
 
-#ifndef _SAE_H_
-#define _SAE_H_
-#include <libconfig.h>
-#include "ieee802_11.h"
+#ifndef _REKEY_H_
+#define _REKEY_H_
+
+#include "service.h"
 
 struct candidate;
+struct mesh_node;
 
-#define    SAE_MAX_EC_GROUPS    10
-#define    SAE_MAX_PASSWORD_LEN 80
+void init_rekey(service_context srvctx, struct mesh_node *mesh);
 
-struct sae_config {
-    int group[SAE_MAX_EC_GROUPS];
-    int num_groups;
-    char pwd[SAE_MAX_PASSWORD_LEN];
-    int debug;
-    int retrans;
-    int pmk_expiry;
-    int open_threshold;
-    int blacklist_timeout;
-    int giveup_threshold;
-};
+void close_rekey();
 
-/* You may choose not to call sae_parse_config and
- * populate sae_config in some other way before
- * invoking sae_initialize() */
-int sae_parse_config(char* confdir, struct sae_config *config);
-int sae_parse_libconfig (struct config_setting_t *sae_section, struct sae_config* config);
-int sae_initialize(char *ssid, struct sae_config *config);
-int process_mgmt_frame(struct ieee80211_mgmt_frame *frame, int len,
-                       unsigned char *local_mac_addr, void *cookie);
-void sae_read_config(int signal);
-void sae_dump_db (int signal);
-int prf (unsigned char *key, int keylen, unsigned char *label, int labellen,
-     unsigned char *context, int contextlen,
-     unsigned char *result, int resultbitlen);
+/* Send link local multicast and wait for unicast replies from the peer.
+ * If we receive one then the rekey worked and we're done.
+ * If receive times out then do another reauth and try all over again. */
+void send_mping(struct candidate *peer);
 
-void do_reauth(struct candidate *peer);
+/* Called when netlink notifies us that an interface's IP has changed. */
+void on_ips_changed();
 
-#endif  /* _SAE_H_ */
+#endif  /* _REKEY_H_ */

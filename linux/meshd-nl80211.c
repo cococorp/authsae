@@ -72,6 +72,8 @@
 #include <openssl/rand.h>
 #include "crypto/siv.h"
 #include "peers.h"
+#include "rekey.h"
+#include "watch_ips.h"
 
 #define CIPHER_CCMP 0x000FAC04
 #define CIPHER_AES_CMAC 0x000FAC06
@@ -1286,6 +1288,14 @@ meshd_parse_libconfig (struct config_setting_t *meshd_section,
         }
     }
 
+    if (config_setting_lookup_string(meshd_section, "bridge",  (const char **)&str)) {
+        strncpy(config->bridge, str, IFNAMSIZ + 1);
+        if (config->bridge[IFNAMSIZ] != 0) {
+            fprintf(stderr, "Bridge name is too long\n");
+            return -1;
+        }
+    }
+
     if (config_setting_lookup_string(meshd_section, "meshid", (const char **)&str)) {
         strncpy(config->meshid, str, MESHD_MAX_SSID_LEN);
         if (config->meshid[MESHD_MAX_SSID_LEN] != 0) {
@@ -1584,6 +1594,9 @@ int main(int argc, char *argv[])
             srv_handler_wrapper);
 
     get_wiphy(&nlcfg);
+
+    init_rekey(srvctx, &mesh);
+    init_watch_ips();
 
     srv_main_loop(srvctx);
     leave_mesh(&nlcfg);

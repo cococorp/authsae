@@ -1,6 +1,13 @@
 #ifndef __PEERS_H
 #define __PEERS_H
 
+#include <openssl/ec.h>
+#include <openssl/sha.h>
+#include <sys/queue.h>
+#include "ampe.h"
+#include "crypto/siv.h"
+#include "service.h"
+
 typedef struct group_def_ {
     unsigned short group_num;
     EC_GROUP *group;
@@ -59,6 +66,9 @@ struct candidate {
     struct ampe_config *conf;
     unsigned int ch_type; /* nl80211_channel_type */
     int candidate_id;
+    timerid retry_timer;
+    unsigned int num_retries;
+    unsigned int num_rekeys;
 };
 
 struct candidate *find_peer(unsigned char *mac, int accept);

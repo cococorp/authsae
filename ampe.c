@@ -60,6 +60,7 @@
 #include "ampe.h"
 #include "crypto/siv.h"
 #include "peers.h"
+#include "rekey.h"
 
 /* Peer link cancel reasons */
 #define MESH_LINK_CANCELLED                     52
@@ -748,6 +749,7 @@ static void fsm_step(struct candidate *cand, enum plink_event event)
             changed |= mesh_set_ht_op_mode(cand->conf->mesh);
             sae_debug(AMPE_DEBUG_FSM, "mesh plink with "
                     MACSTR " established\n", MAC2STR(cand->peer_mac));
+			send_mping(cand);
 			break;
 		default:
 			break;
@@ -783,6 +785,7 @@ static void fsm_step(struct candidate *cand, enum plink_event event)
 			sae_debug(AMPE_DEBUG_FSM, "Mesh plink with "
                     MACSTR " ESTABLISHED\n", MAC2STR(cand->peer_mac));
 			plink_frame_tx(cand, PLINK_CONFIRM, 0);
+			send_mping(cand);
 			break;
 		default:
 			break;
